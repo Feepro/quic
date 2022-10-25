@@ -1,6 +1,8 @@
 package com.timtrense.quic.impl;
 
 import java.nio.ByteBuffer;
+
+import com.timtrense.quic.impl.frames.PingFrameImpl;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -42,11 +44,14 @@ public class FrameParserImpl implements FrameParser {
 
         Frame result;
         switch ( frameType.getGeneralType() ) {
+            case PING:
+                result = new PingFrameImpl();
+                break;
             case PADDING:
                 // we just detected the start of AT LEAST one padding frame.
                 // lets try finding more consecutive paddings to reduce
                 // amount of instantiated padding frame objects
-                result = parseMultiPaddingFrame( data, maxLength );
+                result = new MultiPaddingFrameImpl();
                 break;
             case CRYPTO:
                 result = new CryptoFrameImpl( frameType );
@@ -60,15 +65,18 @@ public class FrameParserImpl implements FrameParser {
         return result;
     }
 
-    private Frame parseMultiPaddingFrame( ByteBuffer data, int maxLength ) {
+    private Frame parseMultiPaddingFrame(ByteBuffer data, int maxLength, boolean isPing) {
         byte[] rawData = data.array();
         int offset = data.position();
         int paddingCount;
-        for ( paddingCount = 0; paddingCount < maxLength; paddingCount++ ) {
-            if ( rawData[offset + paddingCount] != FrameType.PADDING.getLongValue() ) {
-                break;
+        if(!isPing)
+            for ( paddingCount = 0; paddingCount < maxLength; paddingCount++ ) {
+                if ( rawData[offset + paddingCount] != FrameType.PADDING.getLongValue() ) {
+                    break;
+                }
             }
-        }
+        else
+            paddingCount = 0;
         paddingCount++; // because already one Padding Frame was parsed by top parseFrame()
         return new MultiPaddingFrameImpl( paddingCount );
     }

@@ -92,6 +92,7 @@ import com.timtrense.quic.tls.ServerName;
  * @author Tim Trense
  * @see <a href="https://tools.ietf.org/html/rfc6066#section-3">TLS 1.3 Extensions Spec/Section 3</a>
  */
+
 @Data
 @EqualsAndHashCode( callSuper = true )
 public class ServerNameIndicationExtension extends Extension {

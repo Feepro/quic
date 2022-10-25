@@ -129,6 +129,7 @@ public class InitialPacketImpl extends BaseLongHeaderPacket implements NumberedP
              */
             for ( Frame f : payload ) {
                 switch ( f.getType().getGeneralType() ) {
+                    case PING: // fall-throug ok
                     case CRYPTO: // fall-throug ok
                     case PADDING: // fall-throug ok
                     case CONNECTION_CLOSE: // fall-throug ok

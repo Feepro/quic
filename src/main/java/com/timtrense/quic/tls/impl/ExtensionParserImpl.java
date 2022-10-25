@@ -470,7 +470,7 @@ public class ExtensionParserImpl implements ExtensionParser {
         int protocolVersionRaw = (int)VariableLengthIntegerEncoder.decodeFixedLengthInteger( data, 2 );
         ProtocolVersion protocolVersion = ProtocolVersion.findByValue( protocolVersionRaw );
         if ( protocolVersion == null ) {
-            throw new MalformedTlsException( "Invalid ProtocolVersion.value: " + protocolVersionRaw );
+            throw new MalformedTlsException( "Invalid  ProtocolVersion.value: " + protocolVersionRaw );
         }
         return protocolVersion;
     }

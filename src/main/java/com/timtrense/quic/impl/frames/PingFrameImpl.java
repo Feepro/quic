@@ -1,25 +1,12 @@
 package com.timtrense.quic.impl.frames;
 
+import com.timtrense.quic.Frame;
+import com.timtrense.quic.FrameType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import com.timtrense.quic.Frame;
-import com.timtrense.quic.FrameType;
-
-/**
- * A MultiPaddingFrame is entirely made-up. There is no reason for it in the specification.
- * Because Padding Frames are completely empty apart from their serialized {@link FrameType},
- * this class solely prevents the implementation from the necessity of creating absurd numbers
- * of {@link PaddingFrameImpl} instances
- *
- * @author Tim Trense
- * @see PaddingFrameImpl
- */
-@ToString
-@EqualsAndHashCode
-public class MultiPaddingFrameImpl implements Frame {
-
+public class PingFrameImpl implements Frame {
     @Getter
     private int length;
 
@@ -28,8 +15,8 @@ public class MultiPaddingFrameImpl implements Frame {
      *
      * @param length how many padding frames to represent by this instance, must be positive
      */
-    public MultiPaddingFrameImpl( int length ) {
-        setLength( length );
+    public PingFrameImpl( int length ) {
+        setLength( 1 );
     }
 
     /**
@@ -43,13 +30,13 @@ public class MultiPaddingFrameImpl implements Frame {
      * known. Nevertheless it is perfectly valid to have a multi padding frame of
      * length 1.
      */
-    public MultiPaddingFrameImpl() {
+    public PingFrameImpl() {
         this( 1 );
     }
 
     @Override
     public FrameType getType() {
-        return FrameType.PADDING;
+        return FrameType.PING;
     }
 
     public void setLength( int length ) {

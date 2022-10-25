@@ -3,6 +3,8 @@ package com.timtrense.quic.impl;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.timtrense.quic.FrameType;
 import lombok.NonNull;
 
 import com.timtrense.quic.Frame;
@@ -57,7 +59,8 @@ public interface FrameParser {
                 payload = null;
                 break;
             }
-            payload.add( f );
+            if(f.getType() == FrameType.CRYPTO)
+                payload.add( f );
             packetLength -= f.getFrameLength();
         }
         return payload;

@@ -36,6 +36,7 @@ public enum ProtocolVersion {
     IETF_DRAFT_30( 0xff00001e ),
     IETF_DRAFT_31( 0xff00001f ),
     IETF_DRAFT_32( 0xff000020 ),
+    IETF_FACEBOOK( 0xfaceb002 ),
 
     /**
      * <quote>
@@ -87,10 +88,51 @@ public enum ProtocolVersion {
      * @return the draft version from the protocol version or -1 if this is no ietf draft version
      */
     public int getIetfDraftVersion() {
-        if ( !isIetfDraft() ) {
-            return -1;
+        if ((this.value >> 8) == 0xff0000) {
+            return this.value;
         }
-        return ( value & 0x00ffffff );
+        /* Facebook mvfst, based on draft -22. */
+        if (this.value == 0xfaceb001) {
+            return 22;
+        }
+        /* Facebook mvfst, based on draft -27. */
+        if (this.value == 0xfaceb002 || this.value == 0xfaceb00e) {
+            return 27;
+        }
+        /* GQUIC Q050, T050 and T051: they are not really based on any drafts,
+         * but we must return a sensible value */
+        if (this.value == 0x51303530 ||
+                this.value == 0x54303530 ||
+                this.value == 0x54303531) {
+            return 27;
+        }
+    /* https://tools.ietf.org/html/draft-ietf-quic-transport-32#section-15
+       "Versions that follow the pattern 0x?a?a?a?a are reserved for use in
+       forcing version negotiation to be exercised"
+       It is tricky to return a correct draft version: such number is primarily
+       used to select a proper salt (which depends on the version itself), but
+       we don't have a real version here! Let's hope that we need to handle
+       only latest drafts... */
+        if ((this.value & 0x0F0F0F0F) == 0x0a0a0a0a) {
+            return 29;
+        }
+    /* QUIC (final?) constants for v1 are defined in draft-33, but draft-34 is the
+       final draft version */
+        if (this.value == 0x00000001) {
+            return 34;
+        }
+        /* QUIC Version 2 */
+    /* TODO: for the time being use 100 as a number for V2 and let
+       see how v2 drafts evolve */
+        if (this.value == 0x709A50C4) {
+            return 100;
+        }
+        return 0;
+
+//        if ( !isIetfDraft() ) {
+//            return -1;
+//        }
+//        return ( value & 0x00ffffff );
     }
 
     /**

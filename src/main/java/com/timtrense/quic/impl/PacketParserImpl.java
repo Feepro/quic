@@ -178,7 +178,7 @@ public class PacketParserImpl implements PacketParser {
 
         // TOKEN
         byte[] token = new byte[tokenLength.intValue()];
-        remainingData.get( token );
+        initialPacket.setToken(remainingData.get( token ).array());
 
         // LENGTH
         /*
@@ -212,7 +212,7 @@ public class PacketParserImpl implements PacketParser {
 
         InitialPacketProtectionImpl packetProtection = new InitialPacketProtectionImpl( context.getRole() );
         try {
-            packetProtection.initialize( dstConnIdImpl );
+            packetProtection.initialize( dstConnIdImpl,protocolVersion );
         }
         catch ( NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException e ) {
             throw new OutOfOrderProtectedPacketException( datagram, remainingData, packetIndex );
@@ -268,6 +268,7 @@ public class PacketParserImpl implements PacketParser {
             payload = packetProtection.aeadDecrypt( payload, associatedData, aeadNonce );
         }
         catch ( GeneralSecurityException e ) {
+
             throw new MalformedPacketException( "Cannot decrypt initial packet", datagram, remainingData, packetIndex );
         }
         ByteBuffer payloadBuffer = ByteBuffer.wrap( payload );
